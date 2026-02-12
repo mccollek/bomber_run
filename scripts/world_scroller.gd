@@ -1,6 +1,6 @@
 extends Node2D
 
-## Manages scrolling island chunks over the ocean.
+## Manages scrolling island chunks and sea enemies over the ocean.
 
 const ISLAND_TEXTURES: Array[String] = [
 	"res://assets/sprites/island_small.png",
@@ -11,12 +11,17 @@ const ISLAND_TEXTURES: Array[String] = [
 	"res://assets/sprites/island_tiny.png",
 ]
 
-const MIN_GAP := 300.0   # minimum vertical gap between islands
-const MAX_GAP := 600.0   # maximum vertical gap
-const DESPAWN_Y := 800.0  # below viewport
+var PatrolBoatScene: PackedScene = preload("res://scenes/enemies/patrol_boat.tscn")
+var DestroyerScene: PackedScene = preload("res://scenes/enemies/destroyer.tscn")
+
+const MIN_GAP := 300.0
+const MAX_GAP := 600.0
+const DESPAWN_Y := 800.0
+const SHIP_SPAWN_INTERVAL := 8.0  # base seconds between ship spawns
 
 var _loaded_textures: Array[Texture2D] = []
-var _next_spawn_y := -200.0  # y position to spawn next island (in world coords)
+var _next_spawn_y := -200.0
+var _ship_timer := 5.0  # first ship after 5 seconds
 
 func _ready() -> void:
 	for path in ISLAND_TEXTURES:
@@ -30,16 +35,19 @@ func _process(delta: float) -> void:
 	var scroll := GameManager.SCROLL_SPEED * delta
 	for child in get_children():
 		child.position.y += scroll
-		# Despawn if below screen
 		if child.position.y > DESPAWN_Y:
 			child.queue_free()
 
-	# Track virtual scroll position for spawning
+	# Island spawning
 	_next_spawn_y += scroll
-
-	# Spawn new islands when needed
 	while _next_spawn_y >= 0.0:
 		_spawn_island()
+
+	# Ship spawning
+	_ship_timer -= delta
+	if _ship_timer <= 0.0:
+		_ship_timer = SHIP_SPAWN_INTERVAL / GameManager.difficulty_level
+		_spawn_ship()
 
 func _spawn_island() -> void:
 	var tex: Texture2D = _loaded_textures.pick_random()
@@ -47,15 +55,24 @@ func _spawn_island() -> void:
 	sprite.texture = tex
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
-	# Random horizontal position (keep island within viewport width)
 	var tex_w := tex.get_width()
 	var margin := tex_w / 2.0 + 10.0
 	var x_pos := randf_range(margin, 480.0 - margin)
 
-	# Place above viewport
 	sprite.position = Vector2(x_pos, -tex.get_height() / 2.0)
 	add_child(sprite)
 
-	# Schedule next island
 	var gap := randf_range(MIN_GAP, MAX_GAP)
 	_next_spawn_y = -gap
+
+func _spawn_ship() -> void:
+	# 70% patrol boat, 30% destroyer
+	var ship: Node
+	if randf() < 0.7:
+		ship = PatrolBoatScene.instantiate()
+	else:
+		ship = DestroyerScene.instantiate()
+
+	var x_pos := randf_range(40.0, 440.0)
+	ship.position = Vector2(x_pos, -40.0)
+	add_child(ship)
