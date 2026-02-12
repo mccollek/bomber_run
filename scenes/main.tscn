@@ -34,7 +34,7 @@ texture_filter = 0
 
 [node name="AirEnemies" type="Node2D" parent="."]
 
-[node name="Projectiles" type="Node2D" parent="."]
+[node name="Projectiles" type="Node2D" parent="." groups=["projectiles"]]
 
 [node name="Effects" type="Node2D" parent="."]
 
