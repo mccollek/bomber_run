@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://bomber_run_ebullet"]
+
+[ext_resource type="Texture2D" uid="uid://psf4oc6hej6l" path="res://assets/sprites/enemy_bullet.png" id="1_tex"]
+[ext_resource type="Script" path="res://scripts/enemy_bullet.gd" id="2_script"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bullet"]
+radius = 2.0
+
+[node name="EnemyBullet" type="Area2D"]
+collision_layer = 64
+collision_mask = 1
+script = ExtResource("2_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+texture_filter = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_bullet")

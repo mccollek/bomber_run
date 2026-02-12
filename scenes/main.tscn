@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bomber_run_main"]
+[gd_scene load_steps=6 format=3 uid="uid://bomber_run_main"]
 
 [ext_resource type="PackedScene" uid="uid://bomber_run_player" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="Texture2D" uid="uid://d0b275yuytpyb" path="res://assets/sprites/ocean_deep.png" id="2_ocean_deep"]
 [ext_resource type="Texture2D" uid="uid://dab4j2iw48kni" path="res://assets/sprites/ocean_surface.png" id="3_ocean_surface"]
 [ext_resource type="Script" path="res://scripts/scrolling_background.gd" id="4_bg_script"]
+[ext_resource type="Script" path="res://scripts/temp_spawner.gd" id="5_spawner"]
 
 [node name="Main" type="Node2D"]
 
@@ -30,12 +31,15 @@ texture_filter = 0
 
 [node name="ScrollingWorld" type="Node2D" parent="."]
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." instance=ExtResource("1_player") groups=["player"]]
 
-[node name="AirEnemies" type="Node2D" parent="."]
+[node name="AirEnemies" type="Node2D" parent="." groups=["air_enemies"]]
 
 [node name="Projectiles" type="Node2D" parent="." groups=["projectiles"]]
 
-[node name="Effects" type="Node2D" parent="."]
+[node name="Effects" type="Node2D" parent="." groups=["effects"]]
+
+[node name="TempSpawner" type="Node" parent="."]
+script = ExtResource("5_spawner")
 
 [node name="HUD" type="CanvasLayer" parent="."]

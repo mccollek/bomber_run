@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://bomber_run_efighter"]
+
+[ext_resource type="Texture2D" uid="uid://i7ijx1hkklup" path="res://assets/sprites/enemy_fighter.png" id="1_tex"]
+[ext_resource type="Script" path="res://scripts/enemy_fighter.gd" id="2_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(18, 18)
+
+[node name="EnemyFighter" type="Area2D"]
+collision_layer = 16
+collision_mask = 3
+script = ExtResource("2_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+texture_filter = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_hitbox")
