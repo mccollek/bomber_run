@@ -75,6 +75,7 @@ func take_damage(amount: int) -> void:
 	if invincible:
 		return
 	GameManager.health -= amount
+	AudioManager.play_sfx("hit_player")
 	invincible = true
 	_invincibility_timer = INVINCIBILITY_DURATION
 	_flash_timer = FLASH_RATE
@@ -98,6 +99,7 @@ func _on_area_entered(area: Area2D) -> void:
 func _fire() -> void:
 	can_fire = false
 	fire_timer.start()
+	AudioManager.play_sfx("shoot")
 
 	var projectiles := get_tree().get_first_node_in_group("projectiles")
 	if not projectiles:
@@ -115,6 +117,7 @@ func _drop_bomb() -> void:
 	GameManager.bombs -= 1
 	can_bomb = false
 	_bomb_cooldown_timer = BOMB_COOLDOWN
+	AudioManager.play_sfx("bomb_drop")
 
 	var projectiles := get_tree().get_first_node_in_group("projectiles")
 	if not projectiles:

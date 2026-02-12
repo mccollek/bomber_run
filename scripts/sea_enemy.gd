@@ -37,6 +37,7 @@ func _fire() -> void:
 	var projectiles := get_tree().get_first_node_in_group("projectiles")
 	if not projectiles:
 		return
+	AudioManager.play_sfx("enemy_shoot")
 
 	if bullet_count == 1:
 		_spawn_bullet(projectiles, Vector2.UP * bullet_speed)

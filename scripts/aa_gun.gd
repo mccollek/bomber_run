@@ -74,6 +74,7 @@ func _fire_locked() -> void:
 	var projectiles := get_tree().get_first_node_in_group("projectiles")
 	if not projectiles:
 		return
+	AudioManager.play_sfx("enemy_shoot")
 
 	var bullet := BulletScene.instantiate()
 	bullet.position = global_position

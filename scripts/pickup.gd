@@ -54,6 +54,7 @@ func _on_area_entered(area: Area2D) -> void:
 		_collect()
 
 func _collect() -> void:
+	AudioManager.play_sfx("pickup")
 	match type:
 		Type.HEALTH:
 			GameManager.health += 1

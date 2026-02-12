@@ -90,6 +90,7 @@ func spawn_explosion(pos: Vector2, large: bool = false) -> void:
 	explosion.position = pos
 	effects.add_child(explosion)
 	explosion.setup(large)
+	AudioManager.play_sfx("explosion_large" if large else "explosion_small")
 
 func _try_drop_pickup(score_value: int, pos: Vector2) -> void:
 	var effects := get_tree().get_first_node_in_group("effects")
@@ -104,10 +105,13 @@ func _try_drop_pickup(score_value: int, pos: Vector2) -> void:
 		_spawn_pickup(effects, pos, 1)  # BOMB
 
 func _spawn_pickup(parent: Node, pos: Vector2, pickup_type: int) -> void:
-	var pickup := PickupScene.instantiate()
-	pickup.position = pos
-	pickup.set("type", pickup_type)
-	parent.add_child(pickup)
+	# Deferred to avoid spawning Area2D during physics callbacks
+	(func():
+		var pickup := PickupScene.instantiate()
+		pickup.position = pos
+		pickup.set("type", pickup_type)
+		parent.add_child(pickup)
+	).call_deferred()
 
 func check_high_score() -> bool:
 	if score > high_score:

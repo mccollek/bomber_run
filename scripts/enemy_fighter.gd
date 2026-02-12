@@ -63,6 +63,7 @@ func _fire_bullet() -> void:
 	var projectiles := get_tree().get_first_node_in_group("projectiles")
 	if not projectiles:
 		return
+	AudioManager.play_sfx("enemy_shoot")
 	var bullet := BulletScene.instantiate()
 	bullet.position = global_position + Vector2(0, 12)
 	# WW2 fighters fire forward (straight down relative to their heading)
