@@ -21,6 +21,7 @@ func _process(delta: float) -> void:
 	_frame_timer += delta
 	if _frame_timer >= _frame_duration:
 		_frame_timer -= _frame_duration
-		frame += 1
-		if frame >= _total_frames:
+		if frame + 1 >= _total_frames:
 			queue_free()
+		else:
+			frame += 1
