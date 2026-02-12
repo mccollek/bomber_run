@@ -12,7 +12,7 @@ script = ExtResource("4_bg_script")
 
 [node name="DeepOceanLayer" type="ParallaxLayer" parent="Background"]
 motion_scale = Vector2(1, 0.5)
-motion_mirroring = Vector2(0, 240)
+motion_mirroring = Vector2(0, 720)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/DeepOceanLayer"]
 centered = false
@@ -21,7 +21,7 @@ texture_filter = 0
 
 [node name="SurfaceOceanLayer" type="ParallaxLayer" parent="Background"]
 motion_scale = Vector2(1, 1)
-motion_mirroring = Vector2(0, 240)
+motion_mirroring = Vector2(0, 720)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/SurfaceOceanLayer"]
 centered = false
