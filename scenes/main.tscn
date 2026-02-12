@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bomber_run_main"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Background" type="ParallaxBackground" parent="."]
+
+[node name="ScrollingWorld" type="Node2D" parent="."]
+
+[node name="Player" type="Node2D" parent="."]
+
+[node name="AirEnemies" type="Node2D" parent="."]
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="Effects" type="Node2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
