@@ -1,0 +1,64 @@
+[gd_scene load_steps=3 format=3 uid="uid://bomber_run_hud"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dvsdbbq1xgvuw" path="res://assets/sprites/bomb_icon.png" id="2_bomb_icon"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+alignment = 0
+
+[node name="HealthSection" type="VBoxContainer" parent="MarginContainer/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HealthBar" type="HBoxContainer" parent="MarginContainer/TopBar/HealthSection"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BombRow" type="HBoxContainer" parent="MarginContainer/TopBar/HealthSection"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BombIcon" type="TextureRect" parent="MarginContainer/TopBar/HealthSection/BombRow"]
+layout_mode = 2
+texture = ExtResource("2_bomb_icon")
+texture_filter = 0
+custom_minimum_size = Vector2(12, 12)
+stretch_mode = 3
+
+[node name="BombLabel" type="Label" parent="MarginContainer/TopBar/HealthSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "x3"
+
+[node name="ScoreSection" type="VBoxContainer" parent="MarginContainer/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 0
+
+[node name="ScoreLabel" type="Label" parent="MarginContainer/TopBar/ScoreSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
+text = "0000000"
+
+[node name="HighScoreLabel" type="Label" parent="MarginContainer/TopBar/ScoreSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 2
+text = "HI 0000000"
