@@ -56,15 +56,8 @@ func _fire_bullet() -> void:
 		return
 	var bullet := BulletScene.instantiate()
 	bullet.position = global_position + Vector2(0, 12)
-
-	# Aim at player if visible
-	var player := get_tree().get_first_node_in_group("player")
-	if player:
-		var dir: Vector2 = (player.global_position - global_position).normalized()
-		bullet.velocity = dir * 250.0
-	else:
-		bullet.velocity = Vector2.DOWN * 250.0
-
+	# WW2 fighters fire forward (straight down relative to their heading)
+	bullet.velocity = velocity.normalized() * 300.0
 	projectiles.add_child(bullet)
 
 func take_damage(amount: int) -> void:
