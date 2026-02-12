@@ -74,6 +74,17 @@ func _load_high_score() -> void:
 	if config.load("user://highscore.save") == OK:
 		high_score = config.get_value("game", "high_score", 0)
 
+var ExplosionScene: PackedScene = preload("res://scenes/effects/explosion.tscn")
+
+func spawn_explosion(pos: Vector2, large: bool = false) -> void:
+	var effects := get_tree().get_first_node_in_group("effects")
+	if not effects:
+		return
+	var explosion := ExplosionScene.instantiate()
+	explosion.position = pos
+	effects.add_child(explosion)
+	explosion.setup(large)
+
 func check_high_score() -> bool:
 	if score > high_score:
 		high_score = score

@@ -11,10 +11,13 @@ var BulletScene: PackedScene = preload("res://scenes/enemies/enemy_bullet.tscn")
 @export var pattern: Pattern = Pattern.STRAIGHT
 @export var fire_interval := 2.0
 
+@onready var sprite: Sprite2D = $Sprite2D
+
 var velocity := Vector2.ZERO
 var _fire_timer := 0.0
 var _dive_target := Vector2.ZERO
 var _has_dived := false
+var _flash_timer := 0.0
 
 func _ready() -> void:
 	match pattern:
@@ -46,6 +49,12 @@ func _process(delta: float) -> void:
 		_fire_timer = fire_interval
 		_fire_bullet()
 
+	# Hit flash cooldown
+	if _flash_timer > 0.0:
+		_flash_timer -= delta
+		if _flash_timer <= 0.0:
+			sprite.modulate = Color.WHITE
+
 	# Cleanup when off screen
 	if position.y > 760.0 or position.y < -60.0 or position.x < -60.0 or position.x > 540.0:
 		queue_free()
@@ -64,4 +73,11 @@ func take_damage(amount: int) -> void:
 	hp -= amount
 	if hp <= 0:
 		GameManager.add_score(SCORE_VALUE, global_position)
+		GameManager.spawn_explosion(global_position, false)
 		queue_free()
+	else:
+		_flash_hit()
+
+func _flash_hit() -> void:
+	sprite.modulate = Color(4.0, 4.0, 4.0, 1.0)
+	_flash_timer = 0.08

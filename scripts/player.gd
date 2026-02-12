@@ -68,6 +68,7 @@ func take_damage(amount: int) -> void:
 		_die()
 
 func _die() -> void:
+	GameManager.spawn_explosion(global_position, true)
 	GameManager.state = GameManager.State.GAME_OVER
 	GameManager.game_over.emit()
 	visible = false
