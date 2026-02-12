@@ -63,6 +63,7 @@ func reset() -> void:
 func add_score(value: int, pos: Vector2) -> void:
 	score += value
 	enemy_destroyed.emit(value, pos)
+	_try_drop_pickup(value, pos)
 
 func _save_high_score() -> void:
 	var config := ConfigFile.new()
@@ -75,6 +76,11 @@ func _load_high_score() -> void:
 		high_score = config.get_value("game", "high_score", 0)
 
 var ExplosionScene: PackedScene = preload("res://scenes/effects/explosion.tscn")
+var PickupScene: PackedScene = preload("res://scenes/pickups/pickup.tscn")
+
+const DROP_CHANCE_HEALTH := 0.10
+const DROP_CHANCE_BOMB := 0.05
+const DROP_CHANCE_BONUS_PER_100_SCORE := 0.02  # higher value enemies drop more often
 
 func spawn_explosion(pos: Vector2, large: bool = false) -> void:
 	var effects := get_tree().get_first_node_in_group("effects")
@@ -84,6 +90,24 @@ func spawn_explosion(pos: Vector2, large: bool = false) -> void:
 	explosion.position = pos
 	effects.add_child(explosion)
 	explosion.setup(large)
+
+func _try_drop_pickup(score_value: int, pos: Vector2) -> void:
+	var effects := get_tree().get_first_node_in_group("effects")
+	if not effects:
+		return
+	# Bonus drop chance for higher-value enemies
+	var bonus: float = (score_value / 100.0) * DROP_CHANCE_BONUS_PER_100_SCORE
+	var roll := randf()
+	if roll < DROP_CHANCE_HEALTH + bonus:
+		_spawn_pickup(effects, pos, 0)  # HEALTH
+	elif roll < DROP_CHANCE_HEALTH + DROP_CHANCE_BOMB + bonus * 2.0:
+		_spawn_pickup(effects, pos, 1)  # BOMB
+
+func _spawn_pickup(parent: Node, pos: Vector2, pickup_type: int) -> void:
+	var pickup := PickupScene.instantiate()
+	pickup.position = pos
+	pickup.set("type", pickup_type)
+	parent.add_child(pickup)
 
 func check_high_score() -> bool:
 	if score > high_score:
