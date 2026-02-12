@@ -7,17 +7,21 @@ const GUN_OFFSET_X := 6.0
 const GUN_OFFSET_Y := -8.0
 const INVINCIBILITY_DURATION := 1.0
 const FLASH_RATE := 0.08
+const BOMB_COOLDOWN := 1.0
 
 var BulletScene: PackedScene = preload("res://scenes/player/player_bullet.tscn")
+var BombScene: PackedScene = preload("res://scenes/player/player_bomb.tscn")
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var fire_timer: Timer = $FireTimer
 
 var viewport_rect: Rect2
 var can_fire := true
+var can_bomb := true
 var invincible := false
 var _invincibility_timer := 0.0
 var _flash_timer := 0.0
+var _bomb_cooldown_timer := 0.0
 
 func _ready() -> void:
 	viewport_rect = get_viewport_rect()
@@ -45,6 +49,16 @@ func _process(delta: float) -> void:
 	# Firing
 	if Input.is_action_pressed("shoot") and can_fire:
 		_fire()
+
+	# Bombing
+	if Input.is_action_just_pressed("bomb") and can_bomb and GameManager.bombs > 0:
+		_drop_bomb()
+
+	# Bomb cooldown
+	if not can_bomb:
+		_bomb_cooldown_timer -= delta
+		if _bomb_cooldown_timer <= 0.0:
+			can_bomb = true
 
 	# Invincibility flash
 	if invincible:
@@ -75,11 +89,9 @@ func _die() -> void:
 	set_process(false)
 
 func _on_area_entered(area: Area2D) -> void:
-	# Hit by enemy bullet
 	if area.collision_layer & 64:  # EnemyBullets layer
 		take_damage(1)
 		area.queue_free()
-	# Contact with enemy plane
 	elif area.collision_layer & 8:  # AirEnemies layer
 		take_damage(1)
 
@@ -98,6 +110,19 @@ func _fire() -> void:
 	var bullet_r := BulletScene.instantiate()
 	bullet_r.position = global_position + Vector2(GUN_OFFSET_X, GUN_OFFSET_Y)
 	projectiles.add_child(bullet_r)
+
+func _drop_bomb() -> void:
+	GameManager.bombs -= 1
+	can_bomb = false
+	_bomb_cooldown_timer = BOMB_COOLDOWN
+
+	var projectiles := get_tree().get_first_node_in_group("projectiles")
+	if not projectiles:
+		projectiles = get_parent()
+
+	var bomb := BombScene.instantiate()
+	bomb.position = global_position
+	projectiles.add_child(bomb)
 
 func _on_fire_timer_timeout() -> void:
 	can_fire = true
