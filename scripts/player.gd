@@ -32,6 +32,11 @@ func _ready() -> void:
 	area_entered.connect(_on_area_entered)
 
 func _process(delta: float) -> void:
+	if GameManager.state != GameManager.State.PLAYING:
+		visible = GameManager.state == GameManager.State.PLAYING
+		return
+
+	visible = true
 	# Movement
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	position += input * SPEED * delta

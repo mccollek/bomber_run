@@ -64,6 +64,7 @@ func add_score(value: int, pos: Vector2) -> void:
 	score += value
 	enemy_destroyed.emit(value, pos)
 	_try_drop_pickup(value, pos)
+	_spawn_score_popup(value, pos)
 
 func _save_high_score() -> void:
 	var config := ConfigFile.new()
@@ -112,6 +113,18 @@ func _spawn_pickup(parent: Node, pos: Vector2, pickup_type: int) -> void:
 		pickup.set("type", pickup_type)
 		parent.add_child(pickup)
 	).call_deferred()
+
+func _spawn_score_popup(value: int, pos: Vector2) -> void:
+	var effects := get_tree().get_first_node_in_group("effects")
+	if not effects:
+		return
+	var popup := Label.new()
+	popup.text = "+%d" % value
+	popup.add_theme_font_size_override("font_size", 10)
+	popup.add_theme_color_override("font_color", Color.YELLOW)
+	popup.position = pos - Vector2(15, 10)
+	popup.set_script(load("res://scripts/score_popup.gd"))
+	effects.add_child(popup)
 
 func check_high_score() -> bool:
 	if score > high_score:

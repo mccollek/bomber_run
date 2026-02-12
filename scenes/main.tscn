@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bomber_run_main"]
+[gd_scene load_steps=12 format=3 uid="uid://bomber_run_main"]
 
 [ext_resource type="PackedScene" uid="uid://bomber_run_player" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="Texture2D" uid="uid://d0b275yuytpyb" path="res://assets/sprites/ocean_deep.png" id="2_ocean_deep"]
@@ -8,8 +8,14 @@
 [ext_resource type="PackedScene" uid="uid://bomber_run_hud" path="res://scenes/ui/hud.tscn" id="6_hud"]
 [ext_resource type="Script" path="res://scripts/world_scroller.gd" id="7_world_scroller"]
 [ext_resource type="PackedScene" uid="uid://bomber_run_gameover" path="res://scenes/ui/game_over_screen.tscn" id="8_gameover"]
+[ext_resource type="PackedScene" uid="uid://bomber_run_title" path="res://scenes/ui/title_screen.tscn" id="9_title"]
+[ext_resource type="Script" path="res://scripts/camera_shake.gd" id="10_camera"]
 
 [node name="Main" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(240, 360)
+script = ExtResource("10_camera")
 
 [node name="Background" type="ParallaxBackground" parent="."]
 script = ExtResource("4_bg_script")
@@ -49,3 +55,5 @@ script = ExtResource("5_spawner")
 [node name="HUD" parent="." instance=ExtResource("6_hud")]
 
 [node name="GameOverScreen" parent="." instance=ExtResource("8_gameover")]
+
+[node name="TitleScreen" parent="." instance=ExtResource("9_title")]
