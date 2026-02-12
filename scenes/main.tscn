@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bomber_run_main"]
+[gd_scene load_steps=9 format=3 uid="uid://bomber_run_main"]
 
 [ext_resource type="PackedScene" uid="uid://bomber_run_player" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="Texture2D" uid="uid://d0b275yuytpyb" path="res://assets/sprites/ocean_deep.png" id="2_ocean_deep"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/wave_spawner.gd" id="5_spawner"]
 [ext_resource type="PackedScene" uid="uid://bomber_run_hud" path="res://scenes/ui/hud.tscn" id="6_hud"]
 [ext_resource type="Script" path="res://scripts/world_scroller.gd" id="7_world_scroller"]
+[ext_resource type="PackedScene" uid="uid://bomber_run_gameover" path="res://scenes/ui/game_over_screen.tscn" id="8_gameover"]
 
 [node name="Main" type="Node2D"]
 
@@ -31,7 +32,7 @@ centered = false
 texture = ExtResource("3_ocean_surface")
 texture_filter = 0
 
-[node name="ScrollingWorld" type="Node2D" parent="."]
+[node name="ScrollingWorld" type="Node2D" parent="." groups=["world_scroller"]]
 script = ExtResource("7_world_scroller")
 
 [node name="Player" parent="." instance=ExtResource("1_player") groups=["player"]]
@@ -46,3 +47,5 @@ script = ExtResource("7_world_scroller")
 script = ExtResource("5_spawner")
 
 [node name="HUD" parent="." instance=ExtResource("6_hud")]
+
+[node name="GameOverScreen" parent="." instance=ExtResource("8_gameover")]
