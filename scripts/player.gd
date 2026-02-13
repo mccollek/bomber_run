@@ -8,10 +8,13 @@ const GUN_OFFSET_Y := -8.0
 const INVINCIBILITY_DURATION := 1.0
 const FLASH_RATE := 0.08
 const BOMB_COOLDOWN := 1.0
-const ROLL_DURATION := 0.5  # seconds for full barrel roll animation
+const FLIP_DURATION := 0.5
+const FLIP_FRAMES := 7  # frames in bomber_flip.png
 
 var BulletScene: PackedScene = preload("res://scenes/player/player_bullet.tscn")
 var BombScene: PackedScene = preload("res://scenes/player/player_bomb.tscn")
+var _normal_texture: Texture2D
+var _flip_texture: Texture2D = preload("res://assets/sprites/bomber_flip.png")
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var fire_timer: Timer = $FireTimer
@@ -29,6 +32,7 @@ var _roll_timer := 0.0
 func _ready() -> void:
 	viewport_rect = get_viewport_rect()
 	position = Vector2(viewport_rect.size.x / 2.0, viewport_rect.size.y - 80.0)
+	_normal_texture = sprite.texture
 	fire_timer.wait_time = FIRE_RATE
 	fire_timer.one_shot = true
 	fire_timer.timeout.connect(_on_fire_timer_timeout)
@@ -46,23 +50,24 @@ func _process(delta: float) -> void:
 	position.x = clampf(position.x, MARGIN, viewport_rect.size.x - MARGIN)
 	position.y = clampf(position.y, MARGIN, viewport_rect.size.y - MARGIN)
 
-	# Barrel roll animation
+	# Flip animation
 	if _rolling:
 		_roll_timer += delta
-		var t: float = _roll_timer / ROLL_DURATION
+		var t: float = _roll_timer / FLIP_DURATION
 		if t >= 1.0:
 			_rolling = false
 			_roll_timer = 0.0
-			sprite.scale = Vector2(1.0, 1.0)
+			# Restore normal sprite sheet
+			sprite.texture = _normal_texture
+			sprite.hframes = 3
 			sprite.frame = 0
 			invincible = false
 			sprite.visible = true
 		else:
-			# scale.x cycles: 1 → 0 → -1 → 0 → 1 (full rotation illusion)
-			sprite.scale.x = cos(t * TAU)
-			# scale.y bulges in the middle (plane coming toward viewer)
-			sprite.scale.y = 1.0 + 0.35 * sin(t * PI)
-			sprite.frame = 0
+			# Step through flip sprite frames
+			var flip_frame: int = int(t * FLIP_FRAMES)
+			flip_frame = mini(flip_frame, FLIP_FRAMES - 1)
+			sprite.frame = flip_frame
 	else:
 		# Banking animation (only when not rolling)
 		if input.x < -0.1:
@@ -107,6 +112,10 @@ func _start_roll() -> void:
 	_roll_timer = 0.0
 	invincible = true
 	sprite.visible = true
+	# Swap to flip sprite sheet
+	sprite.texture = _flip_texture
+	sprite.hframes = FLIP_FRAMES
+	sprite.frame = 0
 
 func take_damage(amount: int) -> void:
 	if invincible:

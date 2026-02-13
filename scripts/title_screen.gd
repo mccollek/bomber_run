@@ -15,7 +15,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not _active:
 		return
-	prompt_label.visible = fmod(Time.get_ticks_msec() / 1000.0, 0.8) < 0.5
+	prompt_label.modulate.a = 1.0 if fmod(Time.get_ticks_msec() / 1000.0, 0.8) < 0.5 else 0.0
 	if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("shoot"):
 		_start_game()
 
