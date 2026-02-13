@@ -8,6 +8,7 @@ const GUN_OFFSET_Y := -8.0
 const INVINCIBILITY_DURATION := 1.0
 const FLASH_RATE := 0.08
 const BOMB_COOLDOWN := 1.0
+const ROLL_DURATION := 0.5  # seconds for full barrel roll animation
 
 var BulletScene: PackedScene = preload("res://scenes/player/player_bullet.tscn")
 var BombScene: PackedScene = preload("res://scenes/player/player_bomb.tscn")
@@ -22,6 +23,8 @@ var invincible := false
 var _invincibility_timer := 0.0
 var _flash_timer := 0.0
 var _bomb_cooldown_timer := 0.0
+var _rolling := false
+var _roll_timer := 0.0
 
 func _ready() -> void:
 	viewport_rect = get_viewport_rect()
@@ -37,26 +40,48 @@ func _process(delta: float) -> void:
 		return
 
 	visible = true
-	# Movement
+	# Movement (can still move during roll)
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	position += input * SPEED * delta
 	position.x = clampf(position.x, MARGIN, viewport_rect.size.x - MARGIN)
 	position.y = clampf(position.y, MARGIN, viewport_rect.size.y - MARGIN)
 
-	# Banking animation
-	if input.x < -0.1:
-		sprite.frame = 1
-	elif input.x > 0.1:
-		sprite.frame = 2
+	# Barrel roll animation
+	if _rolling:
+		_roll_timer += delta
+		var t: float = _roll_timer / ROLL_DURATION
+		if t >= 1.0:
+			_rolling = false
+			_roll_timer = 0.0
+			sprite.scale = Vector2(1.0, 1.0)
+			sprite.frame = 0
+			invincible = false
+			sprite.visible = true
+		else:
+			# scale.x cycles: 1 → 0 → -1 → 0 → 1 (full rotation illusion)
+			sprite.scale.x = cos(t * TAU)
+			# scale.y bulges in the middle (plane coming toward viewer)
+			sprite.scale.y = 1.0 + 0.35 * sin(t * PI)
+			sprite.frame = 0
 	else:
-		sprite.frame = 0
+		# Banking animation (only when not rolling)
+		if input.x < -0.1:
+			sprite.frame = 1
+		elif input.x > 0.1:
+			sprite.frame = 2
+		else:
+			sprite.frame = 0
 
-	# Firing
-	if Input.is_action_pressed("shoot") and can_fire:
+	# Barrel roll input
+	if not _rolling and Input.is_action_just_pressed("barrel_roll") and GameManager.rolls > 0:
+		_start_roll()
+
+	# Firing (disabled during roll)
+	if not _rolling and Input.is_action_pressed("shoot") and can_fire:
 		_fire()
 
-	# Bombing
-	if Input.is_action_just_pressed("bomb") and can_bomb and GameManager.bombs > 0:
+	# Bombing (disabled during roll)
+	if not _rolling and Input.is_action_just_pressed("bomb") and can_bomb and GameManager.bombs > 0:
 		_drop_bomb()
 
 	# Bomb cooldown
@@ -65,8 +90,8 @@ func _process(delta: float) -> void:
 		if _bomb_cooldown_timer <= 0.0:
 			can_bomb = true
 
-	# Invincibility flash
-	if invincible:
+	# Invincibility flash (skip flash effect during roll — sprite is always visible while rolling)
+	if invincible and not _rolling:
 		_invincibility_timer -= delta
 		_flash_timer -= delta
 		if _flash_timer <= 0.0:
@@ -75,6 +100,13 @@ func _process(delta: float) -> void:
 		if _invincibility_timer <= 0.0:
 			invincible = false
 			sprite.visible = true
+
+func _start_roll() -> void:
+	GameManager.rolls -= 1
+	_rolling = true
+	_roll_timer = 0.0
+	invincible = true
+	sprite.visible = true
 
 func take_damage(amount: int) -> void:
 	if invincible:

@@ -2,6 +2,7 @@ extends CanvasLayer
 
 @onready var health_bar: HBoxContainer = $MarginContainer/TopBar/HealthSection/HealthBar
 @onready var bomb_label: Label = $MarginContainer/TopBar/HealthSection/BombLabel
+@onready var roll_label: Label = $MarginContainer/TopBar/HealthSection/RollLabel
 @onready var score_label: Label = $MarginContainer/TopBar/ScoreSection/ScoreLabel
 @onready var high_score_label: Label = $MarginContainer/TopBar/ScoreSection/HighScoreLabel
 
@@ -13,11 +14,13 @@ func _ready() -> void:
 	GameManager.health_changed.connect(_on_health_changed)
 	GameManager.score_changed.connect(_on_score_changed)
 	GameManager.bombs_changed.connect(_on_bombs_changed)
+	GameManager.rolls_changed.connect(_on_rolls_changed)
 
 	_build_health_pips()
 	_on_health_changed(GameManager.health)
 	_on_score_changed(GameManager.score)
 	_on_bombs_changed(GameManager.bombs)
+	_on_rolls_changed(GameManager.rolls)
 	high_score_label.text = "HI %07d" % GameManager.high_score
 
 func _build_health_pips() -> void:
@@ -49,3 +52,7 @@ func _on_score_changed(new_score: int) -> void:
 
 func _on_bombs_changed(new_count: int) -> void:
 	bomb_label.text = "x%d" % new_count
+
+func _on_rolls_changed(new_count: int) -> void:
+	roll_label.text = "ROLL x%d" % new_count
+	roll_label.modulate = Color.WHITE if new_count > 0 else Color(0.4, 0.4, 0.4, 1.0)

@@ -65,7 +65,8 @@ theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 text = "ARROWS / WASD — Move
 SPACE / Z — Shoot
-X / CTRL — Bomb"
+X / CTRL — Bomb
+SHIFT / C — Barrel Roll"
 
 [node name="Spacer3" type="Control" parent="Panel/VBox"]
 layout_mode = 2

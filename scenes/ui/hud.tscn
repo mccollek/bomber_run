@@ -44,6 +44,12 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 10
 text = "x3"
 
+[node name="RollLabel" type="Label" parent="MarginContainer/TopBar/HealthSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "ROLL x3"
+
 [node name="ScoreSection" type="VBoxContainer" parent="MarginContainer/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3

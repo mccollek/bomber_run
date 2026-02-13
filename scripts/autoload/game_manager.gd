@@ -4,6 +4,7 @@ extends Node
 signal health_changed(new_health: int)
 signal score_changed(new_score: int)
 signal bombs_changed(new_count: int)
+signal rolls_changed(new_count: int)
 signal enemy_destroyed(score_value: int, position: Vector2)
 signal player_died
 signal game_over
@@ -13,6 +14,8 @@ signal game_restarted
 const MAX_HEALTH := 5
 const MAX_BOMBS := 5
 const STARTING_BOMBS := 3
+const MAX_ROLLS := 3
+const STARTING_ROLLS := 3
 const SCROLL_SPEED := 120.0  # pixels per second
 
 ## Game state
@@ -37,6 +40,11 @@ var bombs: int = STARTING_BOMBS:
 		bombs = clampi(value, 0, MAX_BOMBS)
 		bombs_changed.emit(bombs)
 
+var rolls: int = STARTING_ROLLS:
+	set(value):
+		rolls = clampi(value, 0, MAX_ROLLS)
+		rolls_changed.emit(rolls)
+
 var high_score: int = 0
 
 ## Difficulty
@@ -55,6 +63,7 @@ func reset() -> void:
 	health = MAX_HEALTH
 	score = 0
 	bombs = STARTING_BOMBS
+	rolls = STARTING_ROLLS
 	elapsed_time = 0.0
 	difficulty_level = 1.0
 	state = State.PLAYING
