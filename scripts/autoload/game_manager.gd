@@ -12,11 +12,11 @@ signal game_restarted
 
 ## Constants
 const MAX_HEALTH := 5
-const MAX_BOMBS := 5
-const STARTING_BOMBS := 3
+const MAX_BOMBS := 7
+const STARTING_BOMBS := 5
 const MAX_ROLLS := 3
 const STARTING_ROLLS := 3
-const SCROLL_SPEED := 120.0  # pixels per second
+const SCROLL_SPEED := 100.0  # pixels per second
 
 ## Game state
 enum State { TITLE, PLAYING, GAME_OVER }
@@ -89,8 +89,8 @@ var ExplosionScene: PackedScene = preload("res://scenes/effects/explosion.tscn")
 var PickupScene: PackedScene = preload("res://scenes/pickups/pickup.tscn")
 
 const DROP_CHANCE_HEALTH := 0.10
-const DROP_CHANCE_BOMB := 0.05
-const DROP_CHANCE_BONUS_PER_100_SCORE := 0.02  # higher value enemies drop more often
+const DROP_CHANCE_BOMB := 0.15
+const DROP_CHANCE_BONUS_PER_100_SCORE := 0.1  # higher value enemies drop more often
 
 func spawn_explosion(pos: Vector2, large: bool = false) -> void:
 	var effects := get_tree().get_first_node_in_group("effects")

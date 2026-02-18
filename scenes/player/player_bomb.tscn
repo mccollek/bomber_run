@@ -1,19 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://bomber_run_pbomb"]
+[gd_scene format=3 uid="uid://bontpcr26ar6t"]
 
 [ext_resource type="Texture2D" uid="uid://b16780q7m0tdj" path="res://assets/sprites/bomb.png" id="1_bomb_tex"]
 [ext_resource type="Texture2D" uid="uid://gufmr5nhs2a" path="res://assets/sprites/bomb_shadow.png" id="2_shadow_tex"]
-[ext_resource type="Script" path="res://scripts/player_bomb.gd" id="3_script"]
+[ext_resource type="Script" uid="uid://cdb8olw22usgx" path="res://scripts/player_bomb.gd" id="3_script"]
 
-[node name="PlayerBomb" type="Node2D"]
+[node name="PlayerBomb" type="Node2D" unique_id=301023190]
 script = ExtResource("3_script")
 
-[node name="ShadowSprite" type="Sprite2D" parent="."]
+[node name="ShadowSprite" type="Sprite2D" parent="." unique_id=1121499907]
 modulate = Color(1, 1, 1, 0.3)
 texture = ExtResource("2_shadow_tex")
-texture_filter = 0
 
-[node name="BombSprite" type="Sprite2D" parent="."]
+[node name="BombSprite" type="Sprite2D" parent="." unique_id=2103366535]
 position = Vector2(0, -30)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("1_bomb_tex")
-texture_filter = 0

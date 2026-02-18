@@ -1,0 +1,62 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.6
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup export templates
+        run: |
+          mkdir -p /root/.local/share/godot/export_templates/4.6.stable
+          mv /root/.local/share/godot/templates/* /root/.local/share/godot/export_templates/4.6.stable/
+
+      - name: Import project
+        run: godot --headless --import 2>&1 || true
+        timeout-minutes: 3
+
+      - name: Export for Web
+        run: |
+          mkdir -p build/web
+          godot --headless --export-release "Web" build/web/index.html
+        timeout-minutes: 5
+
+      - name: Add coi-serviceworker for SharedArrayBuffer support
+        run: |
+          cd build/web
+          cat > coi-serviceworker.min.js << 'JSEOF'
+          if(typeof window==='undefined'){self.addEventListener("install",()=>self.skipWaiting());self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));self.addEventListener("fetch",function(e){if(e.request.cache==="only-if-cached"&&e.request.mode!=="same-origin")return;e.respondWith(fetch(e.request).then(function(r){if(r.status===0)return r;const headers=new Headers(r.headers);headers.set("Cross-Origin-Embedder-Policy","credentialless");headers.set("Cross-Origin-Opener-Policy","same-origin");return new Response(r.body,{status:r.status,statusText:r.statusText,headers:headers})}).catch(e=>console.error(e)))})}else{const r=window.navigator;if(!r.serviceWorker)return;r.serviceWorker.register(window.document.currentScript.src).then(function(r){r.addEventListener("updatefound",function(){var n=r.installing;n.addEventListener("statechange",function(){if(n.state==="activated"){window.location.reload()}})})}).catch(console.error)}
+          JSEOF
+          sed -i 's|<head>|<head>\n\t<script src="coi-serviceworker.min.js"></script>|' index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: export
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
